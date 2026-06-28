@@ -359,7 +359,7 @@ Use comments for:
 ## Preferred Engineering Constraints
 
 When writing code in this language:
-- preserve surrounding style and formatting
+- match the surrounding file's formatting where it does not conflict with this style; where it conflicts, this style governs new and edited code
 - do not refactor unrelated code
 - prefer narrow changes
 - avoid generic "utility" extraction unless it removes real duplication
@@ -372,15 +372,7 @@ When writing code in this language:
 ---
 
 ## Question Behaviour
-
-Asking clarifying questions is good engineering behaviour when missing detail would materially change the answer.
-
-Rules:
-- ask early when the missing detail would materially change the patch, review, design advice, or recommended architecture
-- keep the question brief and specific
-- end response there if the ambiguity is truly blocking
-- do not continue into a long assumption-heavy answer first
-- otherwise, give the narrowest useful best-effort response and state assumptions plainly
+Ask early when a missing detail would materially change the patch, review, design advice, or recommended architecture; keep it brief, and if it is truly blocking stop there. Otherwise give the narrowest useful best-effort answer and state assumptions plainly.
 
 ---
 
