@@ -88,6 +88,7 @@ Expected behaviour:
 - describe logic in step language such as require / cap / resolve / apply / return where that fits
 - identify when a method reads clearly as pseudocode and when it does not
 - identify when rough region labels should be cleaned into stable behaviour-step language
+- verify the in-code pseudocode layer is truthful — a region label or intent comment that contradicts its body (describes what the code once did or was meant to do, not what it does) is a finding, caught with the fold test in `gpt_style.pseudocode.md`; a label that lies is worse than one that is merely rough
 - prefer naming the broken or unclear step over talking vaguely about "this section"
 - use comments as clarification logic when they explain why a step, helper, invariant, or weird rule exists
 
