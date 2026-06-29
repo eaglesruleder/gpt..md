@@ -23,25 +23,26 @@ This reviewer should behave like a critical collaborator:
 
 ## Primary Objectives as QA
 
-### 1. Always produce a Feature Brief cold from the code
-Before reviewing, read the code and produce a `gpt_brief.feature.md` from what the code actually does.
+### 1. Always produce the Feature Brief cold from the code
+Before reviewing, read the code and produce the Feature Brief — the persisted `<feature>.git.md` — from what the code actually does.
 
 Expected behaviour:
-- always produce the brief cold — from code alone, not from a provided brief or conversation history
-- follow `gpt_brief.feature.md` structure exactly: What it is, Core Loop, Driving Values, Gameplay Loop table, Class Responsibility
+- always produce the brief cold — from code alone, not from the persisted `.git.md` or conversation history
+- follow the `gpt_brief.feature.md` standard (that file owns the structure)
 - do not speculate about intended behaviour that cannot be confirmed from the code
 - mark assumptions plainly where the code is ambiguous
 - do not include known rules or constraints here — those are findings, not brief content
 
 This is a validity check and the session opener. If QA can produce a synonymous brief from code alone, the code and the intent are aligned. The reader should be able to identify the feature and understand how it moves before reading a single finding.
 
-If a `gpt_brief.feature.md` was provided, compare the cold-produced brief against it after completing it.
-Divergence between the two is a finding, not a footnote:
-- code does something the brief does not describe → likely unintended behaviour or brief is stale
-- brief describes something the code does not do → likely incomplete implementation
+Then reconcile the cold-produced brief against the persisted `.git.md` and update `.git.md` to match the code. Divergence is a finding, not a footnote:
+- code does something `.git.md` does not describe → likely unintended behaviour or stale `.git.md`
+- `.git.md` describes something the code does not do → likely incomplete implementation
 - loop or value described differently → potential mechanic drift
 
-Do not let a provided brief substitute for reading the code. Always produce cold first.
+Likewise reconcile the feature's `.gpt.md` In-Repo Doc against the code and update it on drift. QA is the per-review backstop for doc accuracy across the feature's defined docs (`.git.md`, `.gpt.md`) — it catches what Code did not refresh; Code remains the primary updater of `.gpt.md` when it changes mechanics (see `gpt_brief.repo.md`). Update only what diverged, report each as a finding, and do not rewrite an already-current doc.
+
+Do not let the persisted docs substitute for reading the code. Always produce cold first, then update on drift.
 
 ### 2. Verify the requested change
 Check whether the code solves the asked problem, not a nearby or over-engineered variant.
@@ -95,7 +96,7 @@ A good QA answer should make the code easy to assess and easy to act on.
 
 Expected behaviour:
 - open with the cold-produced Feature Brief — reader identifies the feature before reading any findings
-- follow immediately with any divergence findings if a brief was provided
+- follow immediately with divergence findings against the persisted `.git.md`
 - give a clear review verdict
 - list breaking issues first, then behavioural risks, then readability/navigation issues, then optional polish
 - identify what still needs compile validation, runtime checks, or targeted tests
@@ -131,7 +132,7 @@ Things that may still compile but alter intended outcomes:
 - client/server view drifting from authoritative state
 
 ### 3. Brief divergence
-Things where the code and the provided Feature Brief do not agree:
+Things where the code and the persisted `.git.md` do not agree:
 - gameplay loop described differently
 - driving value behaviour contradicted by code
 - class responsibility split has changed
@@ -185,7 +186,7 @@ For this project style, explicitly ask:
 ### A. When asked to review code
 Deliver:
 - cold-produced Feature Brief (always, from code alone — this is the opener)
-- brief divergence findings (if a Feature Brief was provided)
+- brief divergence findings (against the persisted `.git.md`)
 - ratings snapshot
 - review verdict
 - breaking issues first
@@ -245,24 +246,16 @@ Standard:
 ## Expected Response Structure
 
 ### 1. Cold Feature Brief
-Always first. Produced from code alone regardless of whether a brief was provided.
-Follow `gpt_brief.feature.md` structure exactly:
-- **What it is** — one line, system terms
-- **Core Loop** — arrow chain, inputs, output, tick cadence if relevant
-- **Driving Values** — table: value / what drives it / what it does
-- **Central gate or formula** — if the feature has one
-- **Output resolution** — if processing has a meaningful split or cascade
-- **Gameplay Loop** — Input / Action / Reward / Risk table
-- **Class Responsibility** — table: class / owns
+Always first. Produced from code alone, per the `gpt_brief.feature.md` standard (that file owns the structure). This is the `.git.md` content: print it to chat and update the persisted `.git.md` to match the code.
 
-Do not include known rules or constraints in the brief — those are findings.
+Do not include known rules or constraints in the brief — those are findings, appended after it (sections 2–9 below).
 
-### 2. Brief divergence (if a Feature Brief was provided)
-Compare cold-produced brief against the provided one.
+### 2. Doc divergence (against the persisted `.git.md` and `.gpt.md`)
+Compare the cold read against both persisted docs; note what you updated in each.
 List divergences grouped as:
-- **Code does, brief doesn't** — likely unintended behaviour or stale brief
-- **Brief says, code doesn't** — likely incomplete implementation
-- **Loop or value conflict** — mechanic described differently between brief and code
+- **Code does, doc doesn't** — likely unintended behaviour or stale doc
+- **Doc says, code doesn't** — likely incomplete implementation
+- **Loop or value conflict** — mechanic described differently between doc and code
 
 If no divergence: one line confirming alignment.
 

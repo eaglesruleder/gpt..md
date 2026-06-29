@@ -12,12 +12,12 @@ It sits between a Feature Brief and the source code itself:
 - far denser than prose documentation
 - grounded in implementation, not just intent
 
-It lives in the feature's source folder in the repo, named `<feature>.gpt.md`.
-It is consumed by humans browsing the folder, by Code as cheap standing context, and by QA as the implementation shape reference.
+It lives in the feature's source folder in the repo, named `<feature>.gpt.md` — the AI-facing implementation map, sibling to `<feature>.git.md`, the human/wiki-facing Feature Brief (`gpt_brief.feature.md`). `.gpt.md` maps *how it is built*; `.git.md` says what it *is and does*.
+It is consumed by Code as cheap standing context, by QA as the implementation-shape reference, and by humans browsing the folder.
 
 Target compression is **80–90% pseudocode, 10–20% prose** — compact enough to be cheap AI context and fast human orientation, not a substitute for reading the code but a reliable map of it.
 
-An In-Repo Doc evolves when the feature's mechanics or implementation shape change meaningfully. It is not updated per session — that is the Code Brief's job.
+An In-Repo Doc evolves when the feature's mechanics or implementation shape change meaningfully. The Code session that changes the mechanics is its primary updater; QA reconciles it against the code each review as a backstop and corrects drift (see `gpt_task.qa.md`).
 
 ---
 
@@ -296,3 +296,4 @@ TryAdd()
 - Implementation section lists every method including trivial ones — becomes noise
 - Doc is written once and drifts silently from the real codebase shape
 - Prose explanations replace region skeletons where pseudocode would be denser and clearer
+- Transcribes exact tokens the reader will grep — line numbers, serialization keys, index notation — instead of staying a behavioural map

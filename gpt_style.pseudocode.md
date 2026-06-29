@@ -201,7 +201,7 @@ Preferred remedy order:
 A large file should not fail just for being large.
 It should fail when the reader cannot quickly find the concern they need.
 
-### 10. Method-local regions — use only when the code needs a translator
+### 10. Method-local regions — one truthful collapsed-code label per step
 
 When a method's calls are already self-describing, the method body IS the pseudocode. Adding regions produces labels that say the same thing as the lines they wrap — noise with a token cost.
 
@@ -223,8 +223,8 @@ Do not use a method-local region when:
 - the label would be a restatement of the code
 - adding it increases region count without adding story
 
-**Prefer fewer, meaningful regions over many fine-grained ones.**
-Region count is a cost — each one adds noise to the fold map and tokens to context. Earn each region.
+**Default to one collapsed-code region per meaningful step.**
+The fold map is the pseudocode layer (see §13) — when every step carries a truthful collapsed-code label, a folded method reads as its own algorithm outline, and expanding reveals the intricacies. Granularity is not the cost; an untruthful label is. The line to avoid is a region whose label merely restates the single self-describing line beneath it, or — worse — a label copied across bodies that have since diverged. Earn each label by keeping it a faithful one-line compression of what it folds, not by minimising how many you have.
 
 ### 11. Region labels should read like collapsed code
 Region labels are the pseudocode layer. They should read like the one-liner you would write if the body did not exist.
@@ -345,7 +345,7 @@ Push complexity down only when the helper name makes the code easier to read.
 ### 4. Ask: does the method need translating?
 If method names already tell the story, leave it flat.
 If the body has unlabelled setup or logic that does not name itself, add region labels in collapsed-code style.
-Prefer fewer regions. Earn each one.
+Add a truthful collapsed-code label per meaningful step; earn each by keeping it faithful to what it folds, not by minimising count.
 
 ### 5. Comment only where naming cannot carry intent
 Use comments for:
@@ -392,7 +392,7 @@ Rules:
 - regions are a translator — skip them when the code already names itself
 - use collapsed-code region labels: `#region if(!CanPlow) return` not `#region Validate plow target`
 - embed getting-there logic in the guard region that depends on it — keep region count low
-- prefer fewer, meaningful regions over many fine-grained ones
+- default to one truthful collapsed-code region per meaningful step; the cost to avoid is an untruthful or restating label, not region count
 - when given a region skeleton, preserve it and implement to that structure where practical
 - invariants and firing-order dependencies go in inline comments, not region wrappers
 - ask early when missing details would materially change the answer

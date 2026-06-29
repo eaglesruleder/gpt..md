@@ -9,7 +9,9 @@ It captures **what a feature is and how it moves** — the gameplay loop, the dr
 
 It is the opener for every QA session. A reader should be able to identify the feature, understand what drives it, and know what the player does with it before reading a single line of code or findings.
 
-It is produced in planning chat and lives in the solution repo.
+It is the source for the feature's **git-wiki page**, persisted in the repo as `<feature>.git.md`. It is the human-facing, gameplay-facing summary — distinct from the `.gpt.md` In-Repo Doc (`gpt_brief.repo.md`), which is the lean, AI-facing implementation map. The two are siblings: `.git.md` says what the feature *is and does*; `.gpt.md` maps *how it is built*.
+
+It is produced in planning chat, lives in the solution repo, and is kept current by QA each review session.
 It is consumed by QA as the session opener, by Code as standing context, and by Plan as the canonical gameplay summary.
 
 Known rules, constraints, and risks are QA outputs — derived fresh from code each session. They do not live here.
@@ -160,8 +162,8 @@ When not to update one:
 
 **By QA** (`gpt_task.qa.md`):
 - produced cold from code at session start — this is the QA opener
-- if a Feature Brief was already provided, QA compares its cold output against it
-- divergence between the two is a finding
+- reconciled against the persisted `.git.md`: divergence is a finding, and QA updates `.git.md` to match the code
+- printed to chat, with the QA-specific output (ratings, verdict, findings, tests) appended after it
 
 **By Code** (`gpt_task.code.md`):
 - read as standing context before the Code Brief
