@@ -278,7 +278,7 @@ Do not use a method-local region when:
 - the label would be a restatement of the code
 - adding it increases region count without adding story
 
-**A region should wrap at least ~4 meaningful lines** — enough that its label and `#endregion` cost less than the body *and* the label summarises the step more effectively than an eye-scan of those lines would. A two-line wrap rarely earns itself: the directive machinery costs about as much as the code it folds, and the reader could have skimmed the lines faster unfolded. The line count is a proxy; the real test is whether folding the region tells the reader more, faster, than the raw lines do.
+**A region should wrap at least 5 meaningful lines (inclusive floor)** — enough that its label and `#endregion` cost less than the body *and* the label summarises the step more effectively than an eye-scan of those lines would. Four lines or fewer rarely earns the wrap: the directive machinery costs about as much as the code it folds, and the reader could have skimmed the lines faster unfolded. The line count is a proxy; the real test is whether folding the region tells the reader more, faster, than the raw lines do.
 
 **Default to one collapsed-code region per meaningful step.**
 The fold map is the pseudocode layer (see §13) — when every step carries a truthful collapsed-code label, a folded method reads as its own algorithm outline, and expanding reveals the intricacies. Granularity is not the cost; an untruthful label is. The line to avoid is a region whose label merely restates the single self-describing line beneath it, or — worse — a label copied across bodies that have since diverged. Earn each label by keeping it a faithful one-line compression of what it folds, not by minimising how many you have.
@@ -310,6 +310,8 @@ Avoid labels that describe fragments or syntax without capturing the outcome:
 - collapse several fields into one noun — `Qty += accepted` over three separate `+=` lines
 
 Labels are loose on purpose. Accuracy to intent beats accuracy to syntax — a label may be more abstract than, or even slightly looser than, the literal code, as long as folding it still tells the truth about what the step does. Precise edge-case behaviour does not belong in the label; that is what a targeted `// Intent:` comment inside the body is for (see §8). Keeping labels loose keeps `// Intent:` minimal — each stays scoped to its own job.
+
+Prefer a general, greppable term over a precise one. `neverUpdated` reused across the three timestamp guards is searchable and makes the sibling methods read in parallel; spelling out `_prevTimeAerationUpdated < 0 || > totalHours` in the label is neither. The reader who needs the exact condition expands the region — the label's job is to be simple, consistent, and findable, not to restate the guard. A shared general term across similar steps is a feature, not the divergence risk of §10 (that risk is a *stale* shared label, not a deliberately general one).
 
 The test: if you fold the region shut, does the label alone tell you what pseudocode line sits there?
 
@@ -346,6 +348,8 @@ The ideal is:
 - fully expanded: exact code
 - partially folded: exact algorithm outline in collapsed-code shorthand
 - mostly folded: concern map of the class
+
+A side benefit worth knowing: parallel region labels across sibling methods make duplication visible. When four harvest methods all fold to the same `#region while(remaining) SpawnItemEntity(...)` line, the repetition is obvious at the fold layer and invites a shared helper. The outline surfaces the dedup opportunity the expanded code buries.
 
 ### 14. Region-backed pseudocode is a valid collaboration format
 A user may provide a skeleton like:
@@ -433,6 +437,7 @@ When writing code in this language:
 - do not invent abstractions unless the code actually needs them
 - allow one file to hold multiple layers of directly related gameplay logic during active iteration
 - prefer region-backed step outlines over premature file splitting when the class is still one coherent mechanic
+- no magic numbers in logic: promote a named threshold, coefficient, or tuning value to a `const` at the top of the file, or — if a designer would ever retune it — to the tuning model (a `Settings`-style class). Inline literals are fine only for identity/structural values (`0`, `1`, `-1`) and self-naming local math; a bare `70f` or `0.0015f` mid-formula is not
 
 ---
 
@@ -463,7 +468,9 @@ Rules:
 - generalise labels, don't transcribe: coin meaning-names (`neverProcessed`), slash-group siblings, use pseudocode truthiness (`!x`, `= now`, `= default`); labels are loose on purpose, precise edge cases go in `// Intent:` not the label
 - embed getting-there logic in the guard region that depends on it — keep region count low
 - default to one truthful collapsed-code region per meaningful step; the cost to avoid is an untruthful or restating label, not region count
-- a region should wrap ~4+ meaningful lines — enough that the label summarises faster than an eye-scan and costs less than the body; a 2-line wrap rarely earns itself
+- a region should wrap 5+ meaningful lines (inclusive floor) — enough that the label summarises faster than an eye-scan and costs less than the body; 4 or fewer rarely earns the wrap
+- prefer general, greppable label terms reused across sibling steps (`neverUpdated`) over precise per-site ones; the reader expands for the exact condition
+- no magic numbers in logic — promote to a top-of-file `const` or the tuning model; inline only identity/structural values and self-naming local math
 - when given a region skeleton, preserve it and implement to that structure where practical
 - invariants and firing-order dependencies go in inline comments, not region wrappers
 - ask early when missing details would materially change the answer

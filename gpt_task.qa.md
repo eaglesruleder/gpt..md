@@ -92,6 +92,14 @@ Expected behaviour:
 - prefer naming the broken or unclear step over talking vaguely about "this section"
 - use comments as clarification logic when they explain why a step, helper, invariant, or weird rule exists
 
+**Cold-relabel pass — region-label validation.** This is the region-level analogue of the cold Feature Brief (Objective 1). Regenerate every `#region` label cold from the code — per the generalise-don't-transcribe conventions in `gpt_style.pseudocode.md` §11 — then diff your cold labels against the persisted ones. Code edits labels incrementally as it changes a body (deltas); QA reruns the **whole** label set cold each review, so labels that quietly drifted surface the same way a stale brief does. Treat each divergence as a finding:
+- a label that describes what the body once did, not what it does now → label rot (a label that lies is worse than one merely rough)
+- a label that transcribes the body literally where a generalised meaning-name reads smaller and clearer → readability finding
+- a label copy-pasted across bodies that have since diverged → false map; a *deliberately* general term shared across still-parallel steps (e.g. `neverUpdated`) is not a finding
+- a region under the 5-line floor, or whose label restates a single self-describing line → flag the region for removal
+
+The cold labels are also the region skeletons in the feature's `.gpt.md` In-Repo Doc — reconcile `.gpt.md` against this pass and update it on drift (`.gpt.md` is the shared Code/QA implementation map; the `.git.md` brief carries no region labels and is reconciled separately in Objective 1). Report the relabels you would make; apply them only within approved scope.
+
 ### 7. Produce review-ready output
 A good QA answer should make the code easy to assess and easy to act on.
 
