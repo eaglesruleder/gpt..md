@@ -303,6 +303,14 @@ Avoid labels that describe fragments or syntax without capturing the outcome:
 - `#region A cost per input,`
 - `#region And return true out acceptedstackConsumedQty`
 
+**Generalise, don't transcribe.** The label names the step's *meaning*, and may be smaller and more abstract than the code. Do not mirror the body's literal operators and local names — coin the smallest term that carries intent:
+- coin a meaning-name for a condition even if no such variable exists — `neverProcessed`, not `_prevTimeProcessed < 0 || > totalHours`; `if(!valid compostpile)`, not the full code/variant check
+- slash-group siblings into one token — `!browns/inoculumPortions`, `Moisture, Temperature, Aeration = default`
+- use pseudocode truthiness — `!x` for zero/null/empty, `= now` for a timestamp assignment, `= default` for a baseline reset
+- collapse several fields into one noun — `Qty += accepted` over three separate `+=` lines
+
+Labels are loose on purpose. Accuracy to intent beats accuracy to syntax — a label may be more abstract than, or even slightly looser than, the literal code, as long as folding it still tells the truth about what the step does. Precise edge-case behaviour does not belong in the label; that is what a targeted `// Intent:` comment inside the body is for (see §8). Keeping labels loose keeps `// Intent:` minimal — each stays scoped to its own job.
+
 The test: if you fold the region shut, does the label alone tell you what pseudocode line sits there?
 
 ### 12. Embedded getting-there logic in guard regions is acceptable
@@ -452,6 +460,7 @@ Rules:
 - tag load-bearing comments with `// Intent:` (invariants, firing-order, quirks) or `// Objective:` (the goal a block serves); untagged restating comments get deleted
 - regions are a translator — skip them when the code already names itself
 - use collapsed-code region labels: `#region if(!CanPlow) return` not `#region Validate plow target`
+- generalise labels, don't transcribe: coin meaning-names (`neverProcessed`), slash-group siblings, use pseudocode truthiness (`!x`, `= now`, `= default`); labels are loose on purpose, precise edge cases go in `// Intent:` not the label
 - embed getting-there logic in the guard region that depends on it — keep region count low
 - default to one truthful collapsed-code region per meaningful step; the cost to avoid is an untruthful or restating label, not region count
 - a region should wrap ~4+ meaningful lines — enough that the label summarises faster than an eye-scan and costs less than the body; a 2-line wrap rarely earns itself
