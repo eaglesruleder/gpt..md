@@ -118,6 +118,15 @@ Short local names are acceptable when they have common, meaningful usage in the 
 - `beFoo` over `blockEntityFoo`
 - `pos` over `position`
 
+**Encode units and ranges in name suffixes — a consistent suffix grammar is free documentation.**
+- `01` → a value normalized to 0–1 (`Moisture01`, `GetFullness01()`, `GetMoistureHealth01()`)
+- `Qty` → an integer count (`BrownsQty`, `InoculumQty`)
+- `C` → degrees Celsius (`envTempC`, `heatC`)
+- `PerHour` / `PerDay` / `Days` → a rate or duration (`CoolingRatePerHour`, `AerationRetentionDays`)
+- `Threshold` / `Tolerance` → a band edge and its width
+
+Reuse the same suffix for the same kind of value across the codebase, so a reader knows the unit and range from the name alone without chasing the declaration.
+
 ### 5. Use methods as sentence fragments
 Method names should sound like actions or decisions:
 - `CanAcceptFrom`
@@ -197,6 +206,29 @@ float factor = Moisture01 <= Settings.Moisture01Optimal
 ```
 
 This reads as: below optimal → ramp up / above optimal → ramp down. Keep a ternary on one line when it already fits; only break it out this way when the branches are long enough that one line stops scanning.
+
+**The same vertical layout extends to argument lists and initializers — lead each item with its comma, closing delimiter on its own line.**
+When a call or initializer is too long for one line, give each argument or member its own line led by `,`, aligned under the opening delimiter, with the closing `)` / `}` / `]` alone on the final line. The list scans as a stack of items the same way conditions scan as a stack of reasons.
+
+```csharp
+return new Vec4f
+    (Math.Clamp(red * brightness, 0, 1)
+    ,Math.Clamp(green * brightness, 0, 1)
+    ,Math.Clamp(blue * brightness, 0, 1)
+    , 1f
+    );
+```
+
+Same shape for object initializers and dictionary entries:
+
+```csharp
+private readonly BlockTint _blockTint = new()
+    {NormalShaded = true
+    ,RenderRange = 128
+    };
+```
+
+Keep it on one line when it already fits; break to comma-led lines only when the single line stops scanning.
 
 ### 8. Use comments sparingly
 Do not write comments that just restate obvious code.
@@ -311,7 +343,7 @@ Avoid labels that describe fragments or syntax without capturing the outcome:
 
 Labels are loose on purpose. Accuracy to intent beats accuracy to syntax — a label may be more abstract than, or even slightly looser than, the literal code, as long as folding it still tells the truth about what the step does. Precise edge-case behaviour does not belong in the label; that is what a targeted `// Intent:` comment inside the body is for (see §8). Keeping labels loose keeps `// Intent:` minimal — each stays scoped to its own job.
 
-Prefer a general, greppable term over a precise one. `never/futureUpdated` reused across the three timestamp guards is searchable and makes the sibling methods read in parallel; spelling out `_prevTimeAerationUpdated < 0 || > totalHours` in the label is neither. The reader who needs the exact condition expands the region — the label's job is to be simple, consistent, and findable, not to restate the guard. A shared general term across similar steps is a feature, not the divergence risk of §10 (that risk is a *stale* shared label, not a deliberately general one).
+Prefer a general, greppable term over a precise one. `neverUpdated` reused across the three timestamp guards is searchable and makes the sibling methods read in parallel; spelling out `_prevTimeAerationUpdated < 0 || > totalHours` in the label is neither. The reader who needs the exact condition expands the region — the label's job is to be simple, consistent, and findable, not to restate the guard. A shared general term across similar steps is a feature, not the divergence risk of §10 (that risk is a *stale* shared label, not a deliberately general one).
 
 **Compress in code shape — don't paraphrase into prose.** The label is still code: real method names, operators, keywords (`is`), indexers. Generalise by compressing that code, not by narrating it.
 
@@ -326,9 +358,11 @@ Avoid:   try each Add path -> set restoreAeration; else return false   (wordier 
 Compression tools that stay code-shaped:
 - **abbreviate types** — `is BECP` for `is BlockEntityCompostpile`
 - **assume the obvious chain link** — `neighbour.GetHeatStrength()`, not `neighbour.IHeatSource?.GetHeatStrength() ?? 0`, when context already says the neighbour is a heat source; the objective is the call, not the plumbing
-- **slash-group alternatives** into one token — `never/futureUpdated` for `< 0 || > totalHours`
+- **slash-group alternatives** into one token — `!browns/inoculumPortions` for the two sibling portion checks
 
-A coined meaning-name (`neverProcessed`, `never/futureUpdated`) is fine because it reads as an identifier; a narrated step (`try each Add path`) is not. Less wordy is usually more accurate: the tighter code-shaped label says exactly what the line does, where the prose gloss only gestures at it.
+A coined meaning-name (`neverProcessed`, `neverUpdated`) is fine because it reads as an identifier; a narrated step (`try each Add path`) is not. Less wordy is usually more accurate: the tighter code-shaped label says exactly what the line does, where the prose gloss only gestures at it.
+
+**Slash-group only same-meaning branches.** `!browns/inoculumPortions` works because both are the same check on sibling ingredients. Do not fuse branches that mean different things: `never/futureUpdated` looked tidy but merged a first run with an *imported structure carrying a future timestamp* — and the load-bearing branch had neither a name nor protection. When one branch is a domain quirk a later reader might "fix" away, give it its own term and an `// Intent:` on the line — `neverUpdated || imported`, with `// Intent: imported structures can be in the future` (§8).
 
 The test: if you fold the region shut, does the label alone tell you what pseudocode line sits there?
 
@@ -474,15 +508,17 @@ Rules:
 - prefer readable inline logic when it is already clear
 - use helper methods only when the name adds real value
 - use variable names that carry meaning
+- encode units/ranges in name suffixes: `01` normalized 0–1, `Qty` count, `C` Celsius, `PerHour`/`Days` rate/duration
 - keep one clear level of intent per method where practical
 - vertical `||` / `&&` chains with one condition per line are explicit pseudocode — do not break them into separate guards unless outcomes differ
 - apply the same vertical operator-led layout to arithmetic/factor chains (`*`, `+`), one term per line
 - use bitwise `|` / `&` when every operand must run and the result accumulates; tag it `// Intent: | not ||`
 - break long ternaries with `?` / `:` leading their own aligned lines; keep short ones inline
+- extend the vertical layout to argument lists and initializers: comma-led items, closing delimiter on its own line
 - tag load-bearing comments with `// Intent:` (invariants, firing-order, quirks) or `// Objective:` (the goal a block serves); untagged restating comments get deleted
 - regions are a translator — skip them when the code already names itself
 - use collapsed-code region labels: `#region if(!CanPlow) return` not `#region Validate plow target`
-- generalise labels, don't transcribe: coin meaning-names (`neverProcessed`), slash-group siblings, use pseudocode truthiness (`!x`, `= now`, `= default`); labels are loose on purpose, precise edge cases go in `// Intent:` not the label
+- generalise labels, don't transcribe: coin meaning-names (`neverProcessed`), slash-group same-meaning siblings only (a load-bearing quirk gets its own name + `// Intent:`), use pseudocode truthiness (`!x`, `= now`, `= default`); labels are loose on purpose, precise edge cases go in `// Intent:` not the label
 - compress in code shape, don't paraphrase into prose: keep real method names/operators/keywords (`is`), abbreviate types (`is BECP`), assume the obvious chain link (`neighbour.GetHeatStrength()` not the `.IHeatSource?…?? 0` plumbing); `Parse(block.EndVariant()[1..]) - 1` not `parse the #N variant`
 - embed getting-there logic in the guard region that depends on it — keep region count low
 - default to one truthful collapsed-code region per meaningful step; the cost to avoid is an untruthful or restating label, not region count
