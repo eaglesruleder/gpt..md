@@ -147,6 +147,21 @@ if (currentTotalHours < TotalHoursForNextStage
 This reads as: not ready yet / too dry / grow failed → return false.
 That is a story, not a compression. Do not break it into separate guards unless the steps have meaningfully different outcomes or side effects.
 
+**Use bitwise `|` / `&` when every operand must run and the result accumulates — not short-circuit `||` / `&&`.**
+When each line is a side-effecting step whose work must happen regardless of the others, and the boolean is an accumulated outcome (e.g. a `dirty` flag), use single `|` / `&`. Short-circuiting here would silently skip later steps.
+
+```csharp
+// Intent: | not ||
+return
+    UpdateMoisture   (totalHours)
+|   UpdateAeration   (totalHours)
+|   UpdateTemperature(totalHours);
+```
+
+This reads as: update all three, return whether any changed. With `||`, an early `true` would skip the remaining updates — a correctness bug, not an optimisation.
+
+Always tag the chain with an inline `// Intent: | not ||` on the line above. The single character is the exact thing a later reader "fixes" by mistake, so it must be marked as deliberate (see §8).
+
 ### 7. Prefer vertical scanning
 Where it fits the codebase, line up compound conditions so they scan cleanly:
 
@@ -159,6 +174,29 @@ if (world.Side != EnumAppSide.Server
 ```
 
 This style is good when it makes the logic feel like stacked reasons, not a dense sentence.
+
+**The same vertical operator-led layout applies to arithmetic and expression chains, not just boolean conditions.**
+When a value is built from a chain of multiplied or summed factors, lead each line with the operator and align the operands so the chain scans as a stack of contributing terms.
+
+```csharp
+return
+    GetTemperatureFactor01()
+*   GetInoculumFactor01()
+*   GetMoistureFactor01();
+```
+
+This reads as: temperature × inoculum × moisture → the factor. Each line is one contributing term, the same way each boolean line is one reason. Use it wherever a formula has several named factors and the per-term breakdown is the point.
+
+**Lay out multi-line ternaries with the `?` and `:` leading their own aligned lines.**
+When a ternary is too long for one line, put the condition first, then the two branches each on a line led by its operator, aligned. The branches read as the two outcomes of the question above them.
+
+```csharp
+float factor = Moisture01 <= Settings.Moisture01Optimal
+?   GameMath.Lerp(0.1f, 1.0f, (Moisture01 - 0.05f) / (Settings.Moisture01Optimal - 0.05f))
+:   GameMath.Lerp(1.0f, 0.25f, (Moisture01 - Settings.Moisture01Optimal) / (1f - Settings.Moisture01Optimal));
+```
+
+This reads as: below optimal → ramp up / above optimal → ramp down. Keep a ternary on one line when it already fits; only break it out this way when the branches are long enough that one line stops scanning.
 
 ### 8. Use comments sparingly
 Do not write comments that just restate obvious code.
@@ -176,6 +214,23 @@ When a comment is needed for an invariant, prefer it inline on the relevant line
 UpdateSupport(); // must precede base interval — sets totalHoursWaterRetention
 baseInterval?.Invoke(hourInterval, conds, lightGrowthSpeedFactor, growthPaused);
 ```
+
+**Tag durable design comments with `// Intent:` or `// Objective:`.**
+When a comment exists to protect behaviour — an invariant, a firing-order dependency, a deliberately odd choice, or the goal a block is serving — prefix it so the reader knows it is load-bearing and not incidental chatter.
+
+- `// Intent:` — why the code is shaped this way; the thing that must not be "cleaned up". Use for invariants, firing-order, engine quirks, and intentionally weird behaviour.
+- `// Objective:` — the goal a longer block is working toward, when the steps alone do not state it.
+
+```csharp
+//  Intent: OnEvery12Seconds() -> UpdateNeighbourBlocks() clears flag
+set => _neighboursDirty |= value;
+```
+
+```csharp
+//  Objective: Harvest all Compost and Compostpile, then remaining Browns & Inoculum, ignore nutrition
+```
+
+Reserve the tags for comments that carry a rule. A plain restating comment does not get a tag — it gets deleted.
 
 ### 9. Use descriptive `#region`s at two levels
 When one file owns several directly related concerns, keep it navigable.
@@ -222,6 +277,8 @@ Do not use a method-local region when:
 - the body is one or two self-describing calls
 - the label would be a restatement of the code
 - adding it increases region count without adding story
+
+**A region should wrap at least ~4 meaningful lines** — enough that its label and `#endregion` cost less than the body *and* the label summarises the step more effectively than an eye-scan of those lines would. A two-line wrap rarely earns itself: the directive machinery costs about as much as the code it folds, and the reader could have skimmed the lines faster unfolded. The line count is a proxy; the real test is whether folding the region tells the reader more, faster, than the raw lines do.
 
 **Default to one collapsed-code region per meaningful step.**
 The fold map is the pseudocode layer (see §13) — when every step carries a truthful collapsed-code label, a folded method reads as its own algorithm outline, and expanding reveals the intricacies. Granularity is not the cost; an untruthful label is. The line to avoid is a region whose label merely restates the single self-describing line beneath it, or — worse — a label copied across bodies that have since diverged. Earn each label by keeping it a faithful one-line compression of what it folds, not by minimising how many you have.
@@ -389,10 +446,15 @@ Rules:
 - use variable names that carry meaning
 - keep one clear level of intent per method where practical
 - vertical `||` / `&&` chains with one condition per line are explicit pseudocode — do not break them into separate guards unless outcomes differ
+- apply the same vertical operator-led layout to arithmetic/factor chains (`*`, `+`), one term per line
+- use bitwise `|` / `&` when every operand must run and the result accumulates; tag it `// Intent: | not ||`
+- break long ternaries with `?` / `:` leading their own aligned lines; keep short ones inline
+- tag load-bearing comments with `// Intent:` (invariants, firing-order, quirks) or `// Objective:` (the goal a block serves); untagged restating comments get deleted
 - regions are a translator — skip them when the code already names itself
 - use collapsed-code region labels: `#region if(!CanPlow) return` not `#region Validate plow target`
 - embed getting-there logic in the guard region that depends on it — keep region count low
 - default to one truthful collapsed-code region per meaningful step; the cost to avoid is an untruthful or restating label, not region count
+- a region should wrap ~4+ meaningful lines — enough that the label summarises faster than an eye-scan and costs less than the body; a 2-line wrap rarely earns itself
 - when given a region skeleton, preserve it and implement to that structure where practical
 - invariants and firing-order dependencies go in inline comments, not region wrappers
 - ask early when missing details would materially change the answer
