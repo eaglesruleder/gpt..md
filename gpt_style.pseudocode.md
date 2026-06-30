@@ -311,7 +311,24 @@ Avoid labels that describe fragments or syntax without capturing the outcome:
 
 Labels are loose on purpose. Accuracy to intent beats accuracy to syntax — a label may be more abstract than, or even slightly looser than, the literal code, as long as folding it still tells the truth about what the step does. Precise edge-case behaviour does not belong in the label; that is what a targeted `// Intent:` comment inside the body is for (see §8). Keeping labels loose keeps `// Intent:` minimal — each stays scoped to its own job.
 
-Prefer a general, greppable term over a precise one. `neverUpdated` reused across the three timestamp guards is searchable and makes the sibling methods read in parallel; spelling out `_prevTimeAerationUpdated < 0 || > totalHours` in the label is neither. The reader who needs the exact condition expands the region — the label's job is to be simple, consistent, and findable, not to restate the guard. A shared general term across similar steps is a feature, not the divergence risk of §10 (that risk is a *stale* shared label, not a deliberately general one).
+Prefer a general, greppable term over a precise one. `never/futureUpdated` reused across the three timestamp guards is searchable and makes the sibling methods read in parallel; spelling out `_prevTimeAerationUpdated < 0 || > totalHours` in the label is neither. The reader who needs the exact condition expands the region — the label's job is to be simple, consistent, and findable, not to restate the guard. A shared general term across similar steps is a feature, not the divergence risk of §10 (that risk is a *stale* shared label, not a deliberately general one).
+
+**Compress in code shape — don't paraphrase into prose.** The label is still code: real method names, operators, keywords (`is`), indexers. Generalise by compressing that code, not by narrating it.
+
+```
+Prefer:  stackBonus = Parse(block.EndVariant()[1..]) - 1
+Avoid:   parse the #N variant            (prose narration)
+
+Prefer:  if(TryAdd()) restoreAeration = accepted * Settings.Aeration01Per; else return false
+Avoid:   try each Add path -> set restoreAeration; else return false   (wordier and vaguer)
+```
+
+Compression tools that stay code-shaped:
+- **abbreviate types** — `is BECP` for `is BlockEntityCompostpile`
+- **assume the obvious chain link** — `neighbour.GetHeatStrength()`, not `neighbour.IHeatSource?.GetHeatStrength() ?? 0`, when context already says the neighbour is a heat source; the objective is the call, not the plumbing
+- **slash-group alternatives** into one token — `never/futureUpdated` for `< 0 || > totalHours`
+
+A coined meaning-name (`neverProcessed`, `never/futureUpdated`) is fine because it reads as an identifier; a narrated step (`try each Add path`) is not. Less wordy is usually more accurate: the tighter code-shaped label says exactly what the line does, where the prose gloss only gestures at it.
 
 The test: if you fold the region shut, does the label alone tell you what pseudocode line sits there?
 
@@ -466,6 +483,7 @@ Rules:
 - regions are a translator — skip them when the code already names itself
 - use collapsed-code region labels: `#region if(!CanPlow) return` not `#region Validate plow target`
 - generalise labels, don't transcribe: coin meaning-names (`neverProcessed`), slash-group siblings, use pseudocode truthiness (`!x`, `= now`, `= default`); labels are loose on purpose, precise edge cases go in `// Intent:` not the label
+- compress in code shape, don't paraphrase into prose: keep real method names/operators/keywords (`is`), abbreviate types (`is BECP`), assume the obvious chain link (`neighbour.GetHeatStrength()` not the `.IHeatSource?…?? 0` plumbing); `Parse(block.EndVariant()[1..]) - 1` not `parse the #N variant`
 - embed getting-there logic in the guard region that depends on it — keep region count low
 - default to one truthful collapsed-code region per meaningful step; the cost to avoid is an untruthful or restating label, not region count
 - a region should wrap 5+ meaningful lines (inclusive floor) — enough that the label summarises faster than an eye-scan and costs less than the body; 4 or fewer rarely earns the wrap
