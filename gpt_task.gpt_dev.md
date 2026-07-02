@@ -236,6 +236,13 @@ No "as discussed above", no citations, no current-upload references, no download
 ### Tighten without gutting behaviour
 Remove repetition, filler, stale examples, and near-duplicate standards. Preserve unique behaviour rules even when they are longer. Shorten generic claims before shortening domain-specific guidance.
 
+### Instructions portable, examples concrete
+A task or style file's **instructions** must be language- and domain-generic so the file is reusable across environments. Its **examples** may stay in one consistent language or domain (e.g. all C#, all Vintage Story) for readability — a single concrete flavour reads better than contrived polyglot samples, and a reader mentally swaps the syntax.
+
+The discriminator: could a reader apply the rule in a different language or domain after swapping the example's surface? If yes, it is a portable instruction — keep it, illustrated by the concrete example. If a rule only makes sense in the example's language or environment (e.g. "avoid LINQ", `#region` as literal syntax, "check output-room before mutation"), it is an **environment detail masquerading as an instruction** — generalise the rule and push the environment-specific form to the matching `gpt_env..md`.
+
+When examples do commit to one flavour, say so once (e.g. "examples are C#/Vintage Story; the rules are language-general") rather than leaving the reader to guess whether the language is load-bearing.
+
 ### Prompt length is a budget
 A long file is acceptable when the length carries unique behaviour. It is not acceptable when the length is repetition, misplaced context, or generic standards that belong elsewhere.
 

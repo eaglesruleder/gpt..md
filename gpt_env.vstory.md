@@ -225,6 +225,27 @@ Prefer these structural distinctions:
 
 ---
 
+## QA Risk Checks
+
+Environment-specific behavioural and runtime risks, applied alongside the generic checklist in `gpt_task.qa.md`. These are the Vintage Story concretions of that file's generic checks:
+
+- can any quantity go negative, exceed max, or silently desync from a paired value
+- are resource conversions conserving, discarding, or recovering values exactly as intended
+- are output-room and capacity limits enforced before mutation
+- can time resets, invalid timestamps, or long elapsed durations produce bad state
+- can time-step accumulation drift, double-run, or skip on tick
+- does client-only code stay client-side and server-only code stay server-side
+- is gameplay authority server-side and presentation client-side
+- do serialization boundaries preserve enough state after save/load
+- does chunk unload/load produce progression surprises
+- are derived values clamped where needed, and intentionally unclamped where not
+- does a "safe-looking" refactor subtly change balance or gameplay rhythm
+- changed drop / harvest / recovery order, or item acceptance rules
+
+High-risk zones to treat as guilty until checked: persistence, ticking, inventory/slot mutation, and client/server boundaries.
+
+---
+
 ## Working Summary
 
 When in doubt, assume Vintage Story mods are structured like this:

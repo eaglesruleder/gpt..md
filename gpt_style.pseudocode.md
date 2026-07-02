@@ -3,18 +3,20 @@ This gpt_style..md file describes the expected response style, shaping how the a
 # Applied Pseudocode
 
 ## Purpose
-Write code in a style that reads like practical pseudocode implemented directly in C#.
+Write code in a style that reads like practical pseudocode implemented directly in real code.
 
 The goal is not abstract "clean code".
 The goal is code that is fast to read, easy to reason about, and shaped like intent.
+
+The rules here are language-general. The examples are C# (drawn from Vintage Story modding) for a consistent, concrete read — swap the surface syntax for the target language and the rule still holds. Where a construct is language-specific, the language-relative form is called out (see "Region markers are language-relative" below).
 
 This style is written for **RAD development**.
 That means:
 - direct implementation is often better than early abstraction
 - one file doing a lot of directly related work is acceptable
 - helper extraction is selective, not automatic
-- `#region`s are a translation tool — use them only when the code needs translating
-- method-local `#region`s may be used as behaviour-step regions when a method has several meaningful steps that the code itself does not already name
+- regions are a translation tool — use them only when the code needs translating
+- method-local regions may be used as behaviour-step regions when a method has several meaningful steps that the code itself does not already name
 
 ---
 
@@ -32,6 +34,17 @@ A reader should be able to skim:
 - method names for behaviour grouping
 - method-local regions for step grouping, only where the code itself does not already tell the story
 - code lines for exact implementation
+
+---
+
+## Region markers are language-relative
+`#region` / `#endregion` is C# syntax. The region *concept* is language-general — use whatever marker the target language's editors fold on:
+- C#: `#region` / `#endregion`
+- TS/JS: `//#region` / `//#endregion`
+- Python: `# region` / `# endregion` (VS Code) or none
+- no region support: skip regions; rely on names, helpers, and blank-line grouping
+
+The label conventions (§9–14) apply unchanged whatever the marker syntax. Folding only works in statement position — not inside JSX/markup, where component and element boundaries do the grouping instead. Throughout this file `#region` is shorthand for the target language's region marker.
 
 ---
 
@@ -478,16 +491,16 @@ Use comments for:
 
 ## Preferred Engineering Constraints
 
-When writing code in this language:
+When writing code in this style:
 - match the surrounding file's formatting where it does not conflict with this style; where it conflicts, this style governs new and edited code
 - do not refactor unrelated code
 - prefer narrow changes
 - avoid generic "utility" extraction unless it removes real duplication
-- avoid LINQ where possible
-- keep client/server concerns separated
+- avoid opaque query/collection-pipeline chains where a plain loop reads clearer (e.g. LINQ in C#)
+- keep execution-context concerns separated where the platform splits them (e.g. client vs server); the loaded `gpt_env..md` owns the specifics
 - do not invent abstractions unless the code actually needs them
-- allow one file to hold multiple layers of directly related gameplay logic during active iteration
-- prefer region-backed step outlines over premature file splitting when the class is still one coherent mechanic
+- allow one file to hold multiple layers of directly related feature logic during active iteration
+- prefer region-backed step outlines over premature file splitting when the file is still one coherent unit
 - no magic numbers in logic: promote a named threshold, coefficient, or tuning value to a `const` at the top of the file, or — if a designer would ever retune it — to the tuning model (a `Settings`-style class). Inline literals are fine only for identity/structural values (`0`, `1`, `-1`) and self-naming local math; a bare `70f` or `0.0015f` mid-formula is not
 
 ---
