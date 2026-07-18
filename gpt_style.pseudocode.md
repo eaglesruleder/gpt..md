@@ -10,6 +10,8 @@ The goal is code that is fast to read, easy to reason about, and shaped like int
 
 The rules here are language-general. The examples are C# (drawn from Vintage Story modding) for a consistent, concrete read — swap the surface syntax for the target language and the rule still holds. Where a construct is language-specific, the language-relative form is called out (see "Region markers are language-relative" below).
 
+When a project loads language- or surface-specific style files alongside this one, read them too — they own their surface (indent, brace placement, class-name vocabulary, and the like) and defer to this file for the general vertical-layout (§7) and comment discipline (§8). This file stays the language-general master; the surface files add only their own specifics.
+
 This style is written for **RAD development**.
 That means:
 - direct implementation is often better than early abstraction

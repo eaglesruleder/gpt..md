@@ -1,11 +1,13 @@
-This gpt_brief..md file defines the structure and content expectations for a Feature Brief — a concise, gameplay-facing summary of a feature that serves as the QA session opener and standing context for Code and Plan.
+This gpt_brief..md file defines the structure and content expectations for a Feature Brief — a concise, user- or gameplay-facing summary of a feature that serves as the QA session opener and standing context for Code and Plan.
 
 # Feature Brief
 
 ## Purpose
 A Feature Brief is a stable reference artifact, not a task document.
 
-It captures **what a feature is and how it moves** — the gameplay loop, the driving values, the system shape — in the most compressed form that remains immediately useful.
+Its language and examples lean game/Vintage Story, but the structure fits any product domain, game or app — read *player* as *player or user*, and *gameplay loop* as the feature's core/user loop.
+
+It captures **what a feature is and how it moves** — the core loop, the driving values, the system shape — in the most compressed form that remains immediately useful.
 
 It is the opener for every QA session. A reader should be able to identify the feature, understand what drives it, and know what the player does with it before reading a single line of code or findings.
 
@@ -40,7 +42,7 @@ Use the smallest scope that is honest. Do not scope to Domain when the work is r
 # Brief — <Feature Name>
 
 **Scope:** Domain | Feature | Subsystem
-**Domain:** <mod domain, e.g. wildfarm>
+**Domain:** <domain, e.g. wildfarm or oddform>
 **Status:** Draft | Active | Stable | Superseded
 
 ---
@@ -80,7 +82,7 @@ One line on what it is, then the formula or condition.
 
 ---
 
-## Gameplay Loop
+## Gameplay / User Loop
 
 | Input | Action | Reward | Risk |
 |---|---|---|---|
@@ -126,11 +128,11 @@ Name it explicitly. Give the formula or stall condition in one block.
 Only include if the processing step has a meaningful split, cascade, or overflow rule.
 One short paragraph or arrow chain. Not a full pseudocode skeleton — that lives in the In-Repo Doc.
 
-### Gameplay Loop Table
+### Gameplay / User Loop Table
 One row unless interactions are genuinely distinct and mutually exclusive.
 Four columns: Input, Action, Reward, Risk.
 Cells may contain multiple values as line-separated entries.
-This is the player-facing view. Keep it honest about what is always lost and what is conditional.
+This is the player/user-facing view. Keep it honest about what is always lost and what is conditional.
 
 ### Class Responsibility
 One row per class. One-line ownership statement.

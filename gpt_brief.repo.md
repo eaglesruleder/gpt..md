@@ -5,6 +5,8 @@ This gpt_brief..md file defines the structure and content expectations for an In
 ## Purpose
 An In-Repo Doc is a folder artifact, not a task document or planning record.
 
+Its examples are Vintage Story-flavoured (C#, engine ticks), but the structure fits any product domain, game or app — read *player* as *player or user*.
+
 It captures **what a feature is and how it is implemented** in the most compressed form that remains useful — a tight summary header followed by a pseudocode body that reflects the actual shape of the code.
 
 It sits between a Feature Brief and the source code itself:
@@ -27,7 +29,7 @@ An In-Repo Doc evolves when the feature's mechanics or implementation shape chan
 # Doc — <Feature Name>
 
 **Scope:** Feature | Subsystem
-**Domain:** <mod domain, e.g. wildfarm>
+**Domain:** <domain, e.g. wildfarm or oddform>
 **Status:** Draft | Active | Stable | Superseded
 
 ---

@@ -1,9 +1,11 @@
-This gpt_brief..md file defines the structure and content expectations for a Project Summary — a single project-altitude orientation doc that maps the whole mod in one glance and serves as the entry point into every lower brief.
+This gpt_brief..md file defines the structure and content expectations for a Project Summary — a single project-altitude orientation doc that maps the whole project in one glance and serves as the entry point into every lower brief.
 
 # Project Summary
 
 ## Purpose
 A Project Summary is the top of the brief hierarchy. It sits above every Feature Brief and In-Repo Doc.
+
+Its language and examples lean mod/Vintage Story, but the structure fits any project, game or app — read *mod* as *project*.
 
 It captures **what the whole project is, how big each part is, and where the priorities sit** — in the most compressed form that still lets a reader orient before opening anything else.
 
@@ -32,12 +34,12 @@ A Project Summary is always `Project` scope. It is the only artifact at that sco
 ```md
 # <Project Name>
 
-<one-line description — system terms, what the mod adds>
+<one-line description — system terms, what the project adds>
 
 ---
 
 ## What this is
-One short paragraph. What the mod does in the game and a quick summary of its
+One short paragraph. What the project does and a quick summary of its
 features — the spec, not the code architecture. End with what is in progress.
 
 ---
@@ -63,7 +65,7 @@ Only the practical instructions a contributor needs — build command, output lo
 ## Section Rules
 
 ### Description line
-One line, system terms. What the mod adds, not who it is for.
+One line, system terms. What the project adds, not who it is for.
 
 Good:
 > Vintage Story mod — farming and survival quality-of-life systems.
@@ -72,7 +74,7 @@ Bad:
 > The ultimate farming overhaul that makes the game feel alive.
 
 ### What this is
-One paragraph. What the mod does in the game (the spec) and a quick run through the features — what the player interacts with, not how the code is laid out. Close with what is in progress. No domain-count/architecture inventory, no design rationale, no marketing.
+One paragraph. What the project does (the spec) and a quick run through the features — what the user (or player) interacts with, not how the code is laid out. Close with what is in progress. No domain-count/architecture inventory, no design rationale, no marketing.
 
 Good:
 > OddWire adds hands-on organic systems. The CompostPile turns dry grass and food scraps into compost over time; watering runs through the vanilla can. More features are in progress.
@@ -96,7 +98,7 @@ Only what a contributor actually runs. Drop template boilerplate and migration n
 
 ## Production
 
-A Project Summary is produced once the mod has more than one domain or enough content that a flat file tree no longer orients a newcomer. It is normally written as the repo-root `README.md` so it is also the GitHub landing page.
+A Project Summary is produced once the project has more than one domain or enough content that a flat file tree no longer orients a newcomer. It is normally written as the repo-root `README.md` so it is also the GitHub landing page.
 
 When to produce one:
 - when the repo has grown past a single feature
