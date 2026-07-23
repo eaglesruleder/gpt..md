@@ -168,6 +168,10 @@ A module whose shape is not obvious from its signatures carries a step outline i
 
 Two shapes, deliberately distinct: `region:` for a step outline, `—` for a one-line note on a function that needs no outline.
 
+**A fence is inert; prose is checked.** Intra-doc links resolve in prose and warn when broken, but rustdoc does not read inside a code fence — a link there is decoration. So a skeleton buys alignment at the cost of verification, and a name that matters enough to be caught when it is renamed belongs in a prose line outside the fence.
+
+**Do not hand-maintain a call graph.** Group sibling functions under one shared skeleton where they have the same shape — that surfaces duplication, which the code buries. But do not nest callees under callers: a helper with three callers gets written three times and the copies drift, and "how many callers does this have" is a question the editor answers live and correctly. Record in the outline only what neither the code nor the tooling knows — most usefully, that a helper exists to *name* a step rather than to be reused.
+
 **The 5-line floor applies to docs as well as code.** A module of short, self-naming functions gets prose and no fence — a skeleton that says less than the signatures is worse than nothing. Do not skeleton trivial functions; a trailing prose line listing a family of small helpers beats five more entries.
 
 ---
