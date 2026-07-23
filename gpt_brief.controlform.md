@@ -76,6 +76,7 @@ Every control list is a 12-column grid; a control is **full-width unless** it se
 - `valueType`: `'text' | 'int' | 'decimal' | 'email' | 'phone'` — drives the mobile keyboard; **stored as the raw string** (no parse/coerce).
 - `keyboardType`: overrides the inferred `inputMode`.
 - `controls` on radio/dropdown is the **static option list**: `ControlOption = { value: string; label: string }` — `value` is saved, `label` is shown.
+- A `label` control renders its `label` prop as a **heading** (a separator line) and its `value` as **body text** beneath. Both are optional: label-only is a heading/divider, value-only is a plain text line, both together give heading + body. It never takes input, so use value-only `label`s to lay out static list lines.
 - `labelFor` on a `label` mirrors another control's `hidden` state — the label hides when the named control is hidden.
 
 ### Layout controls
@@ -91,7 +92,32 @@ Structural; own local UI state (open/active), store **nothing** — `param` is i
 - `controls` here is **child controls**, not options.
 - A **run of adjacent `tab` controls** becomes one tabset. If `controls[0].type === 'tab'`, the whole form renders as a **root bottom-bar tabset** (page navigation).
 - A `hidden` tab is dropped from its tabset.
-- A `looper` stores a **row-instance array** under its `param` (`value: LooperRowInstance[]`), each row a sparse overlay over the looper's `controls`. Unlike other layout controls, its child `param`s are scoped **per row**, not to the flat form.
+- A `looper` stores a **row-instance array** under its `param` (`value: LooperRowInstance[]`), each row a sparse overlay over the looper's `controls`. Unlike other layout controls, its child `param`s are scoped **per row**, not to the flat form. See **Authoring a `looper`** below for the row JSON.
+- A `looper` renders **no heading of its own** — precede it with a `label` control (or wrap it in a `collapsible`) to title the section.
+
+### Authoring a `looper`
+A `looper`'s `value` is an **array of row instances**. Each row is itself a mini form-instance over the looper's `controls` — the **same sparse `param`-keyed overlay** shape as a whole `FormInstance`, **not** a flat `{ child: value }` map:
+
+```json
+{
+    "type": "looper", "param": "traits", "addRows": true,
+    "controls": [
+        { "type": "text",     "param": "note", "cellClassName": "sm-col-11" },
+        { "type": "checkbox", "param": "done", "cellClassName": "sm-col-1" }
+    ],
+    "value": [
+        { "controls": [ { "param": "note", "value": "First row text" } ] },
+        { "controls": [ { "param": "note", "value": "Second row text" } ] }
+    ]
+}
+```
+
+- **Row shape is `{ "controls": [ { "param", "value" }, … ] }`** — the wrapping `controls` array is mandatory. A flat `{ "note": "…" }` will **not** seed the row.
+- Only the child `param`s you want to seed need appear; the rest fall back to the child control defs (e.g. the `checkbox` above defaults unchecked, so its `done` param is omitted per row).
+- A bare `{}` — or any row missing its `controls` array — normalises to **one empty row**. That is the idiom for a single blank starter row: `"value": [ {} ]`.
+- `addRows: true` shows the **+ Add Row** button; omit it for a fixed row set.
+- Child `param`s are scoped **per row**, so the same child `param` (`note`, `done`, …) repeats down every row — and across other loopers — without colliding with the flat form scope. Only the looper's **own** `param` must be unique in the form.
+- The `{ text · checkbox }` split above (`sm-col-11` / `sm-col-1`) is the canonical checklist row: an editable line with a tick beside it. Every leaf honours `cellClassName`, so a looper row lays out on the 12-col grid like any other control list.
 
 ---
 
