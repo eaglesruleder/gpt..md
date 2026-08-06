@@ -44,9 +44,12 @@ A reader should be able to skim:
 - C#: `#region` / `#endregion`
 - TS/JS: `//#region` / `//#endregion`
 - Python: `# region` / `# endregion` (VS Code) or none
+- Rust: `// region:` / `// endregion` for method-local steps — but a real `mod` is the better file-level grouping (see `gpt_style.rust.md`)
 - no region support: skip regions; rely on names, helpers, and blank-line grouping
 
 The label conventions (§9–14) apply unchanged whatever the marker syntax. Folding only works in statement position — not inside JSX/markup, where component and element boundaries do the grouping instead. Throughout this file `#region` is shorthand for the target language's region marker.
+
+**Prefer a real language construct over a marker comment where one exists.** A region marker is a comment the editor happens to fold; a construct that groups, folds, documents, and enforces visibility does strictly more for the same keystrokes. Rust's `mod` is the worked case — reach for the construct first, and fall back to the marker only for groupings the language cannot express (typically steps inside a function body).
 
 ---
 
