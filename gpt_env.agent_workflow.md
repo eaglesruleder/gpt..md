@@ -50,6 +50,13 @@ Project Summary
   otherwise leaves the early work invisible. Record those arcs, name where they *are* documented,
   and mark the list as history rather than a backlog of briefs to write retroactively.
 
+**A milestone may be written retrospectively.** When substantial work has shipped that no milestone
+directed — common when one pipeline's needs pull another's substrate along with it — record it as a
+milestone marked *retrospective*, with **no acceptance criteria**. It gated nothing, and inventing
+criteria after the fact fabricates a contract that never existed, exactly as a reconstructed task
+brief would. Its job is to give the work a home, state what the planned milestones now inherit, and
+stop the next reader concluding nothing has happened since the last real milestone.
+
 **Pipeline** — an independent work stream (renderer / simulation / UI / game; or service / client /
 infrastructure) with its own milestone sequence, task queue and standing design. Milestone numbers
 are pipeline-local, so always cite them qualified — `Renderer / M2`, never a bare `M2`.
@@ -80,6 +87,38 @@ never being built, concept risks being mistaken for committed work.
 A kind change is a rename. That is acceptable precisely because a kind change is rare and worth
 being loud about — unlike task order, which changes routinely and therefore lives in the milestone
 rather than in a filename.
+
+### Status has three axes
+
+A single `Status:` field answers three different questions at once, and they drift apart. Design
+docs state status on three independent axes:
+
+```text
+**Status:** Design `Confirmed` - Build `Partial` - Validation `Gate pending`
+```
+
+| Axis | Asks | Values |
+|---|---|---|
+| **Design** | is the *intent* settled? | `Proposed` / `Draft` / `Confirmed` / `Superseded` |
+| **Build** | what exists in code? | `Unbuilt` / `Partial` / `Built` / `Retired` |
+| **Validation** | what *proves* it works? | `Untested` / `Tested` / `Benchmarked` / `Gate pending` / `n/a` |
+
+**Never infer one axis from another.** A `Confirmed` design may be `Unbuilt`; a `Built` subsystem may
+be `Untested`; a `Draft` design may be `Partial` in code because a slice shipped ahead of the
+writing. That inference is the failure this exists to prevent — most often as a `Confirmed` design
+read as working software.
+
+**Validation is the axis that gets skipped**, so be strict with it. `Gate pending` means a *named*
+gate exists and has not been run — name it. It is a debt with an address, not a synonym for
+"probably fine". `n/a` is honest for a `concept.` doc, or a `research.` doc whose graduation
+condition *is* its proof criterion.
+
+Carry the prose the axes cannot on a companion `**Status detail:**` line: which slice shipped, which
+gate is pending, which open question is owed. Axes are for scanning and grepping; the detail is for
+reading.
+
+Milestones keep a single status (`Planned` / `Active` / `Complete`) — a milestone is a bounded
+outcome, not a design, and its acceptance criteria already carry validation.
 
 ### Where implementation lives
 
@@ -225,6 +264,11 @@ Update it for material dependencies, invalidated assumptions, blockers, changed 
 - update the Milestone when a task lands, when its scope or acceptance moves, or when an arc ships
   without a brief
 
+**Live status has exactly one owner, and secondary documents point at it — never restate it.**
+A status line copied into an index, a front page or a parent document is a second copy that will
+drift, and the copy is usually the one a newcomer reads first. If a roll-up is genuinely wanted,
+**generate it** rather than storing it.
+
 Two reconciliations are routinely missed and are worth naming:
 
 - **A `Status:` line that has gone stale is a defect.** A design doc saying "unbuilt" about something
@@ -234,6 +278,29 @@ Two reconciliations are routinely missed and are worth naming:
   layer split, a version-lane rule, a dead end — has that content reconciled out into the design doc
   or In-Repo Doc that owns it before the task is considered done. The brief keeps the execution
   record; the standing doc keeps the rule.
+
+---
+
+## Documentation Linting
+
+Past a few dozen documents, consistency stops being maintainable by human vigilance. The failures
+are mechanical and so are the checks. Automate at least:
+
+- **local links resolve** — across *every* tracked document, with missing binary assets reported
+  separately from broken document links;
+- **exactly one top-level heading** per file;
+- **required header fields present and valid** — the kind, the status axes, and whatever else the
+  project's conventions declare mandatory;
+- **the checker exits non-zero**, so it can gate a merge rather than being run when someone
+  remembers.
+
+**Generate roll-ups; never store them.** A printed summary — counts per axis, outstanding validation
+gates, documents whose build is ahead of their settled design — is free and always current. The same
+summary written into a file is one more copy of live status to drift.
+
+**A cold read is worth buying periodically.** Export the documentation corpus and have a reader with
+no prior context assess it. They will find the things familiarity hides — most reliably, a stale
+front page, because the people who maintain the deep documents rarely re-read the entry point.
 
 ---
 
@@ -306,6 +373,22 @@ The design doc and the In-Repo Doc drift into the same subject, then disagree, a
 way to tell which is current. Split on the tier boundary: intent above, implementation beside the
 code.
 
+### A checker that covers a subset while claiming completeness
+A link checker hardcoded to a few directories reports "0 broken links" over a broken front page, and
+is *worse than no checker* because it converts an unknown into a false assurance. Enumerate the
+corpus from the source of truth — the version-control file list — never from a hand-maintained set
+of paths.
+
+### Status copied onto the front page
+The entry document restates pipeline or milestone status, drifts, and becomes the least trustworthy
+page in the repository while being the first one anybody opens. Point at the owner instead.
+
+### A numbering system with no noun
+Two independent sequences of small integers — backlog groups and engine domains, sprints and
+milestones — get cited as bare numbers, and eventually disagree: *Group 6* means one thing, *Epic 6*
+another. Name the things and cite the name. Numbers earn their place only where they carry sequence
+that genuinely matters.
+
 ### An unrunnable acceptance criterion
 "Manual visual pass", "verified by inspection", "looks correct" — named as a gate, never defined, so
 the work can never be closed, only asserted. Either write down what to look at and what failure
@@ -324,3 +407,5 @@ looks like, or drop the criterion. A checklist is usually enough; a procedure is
 - every milestone can state what shipped under it, including the parts that shipped without a brief
 - a resequence renames nothing
 - standing docs and their `Status:` lines still describe the code
+- documentation consistency is enforced mechanically, not by anyone remembering
+- the entry document is the most reliable page, not the least
