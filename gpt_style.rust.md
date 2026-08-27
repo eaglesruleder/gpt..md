@@ -120,6 +120,25 @@ A module whose purpose is obvious gets one line. The header earns length only fr
 
 **State limits rather than leaving them to be discovered.** A known-and-accepted limitation reads as engineering; the same limitation discovered later reads as a bug.
 
+**A Rust project does not need a separate `.gpt.md`.** `gpt_brief.repo.md` describes an AI-facing
+implementation map living beside the code. `//!` already *is* that, per file: it carries the
+rationale, the rule, the dead ends and the known limits, rustdoc renders it, and intra-doc links
+warn when they rot. A parallel `.gpt.md` would be a third copy of the same content — and the only
+copy nothing checks.
+
+What Rust still wants is the **subsystem** level, which no single file's header can hold: how a
+family of modules composes, which file owns which decision, and the dead ends that span several of
+them. Write that as one `.git.md` per subsystem, beside the code. So:
+
+```text
+//! header       why THIS FILE is shaped this way    per file, rustdoc-checked
+<subsystem>.git.md   how the live subsystem works NOW    per subsystem
+design docs      what it is and what it should do    per concept, elsewhere in the repo
+```
+
+An implementation dead end belongs in the first two. A design dead end — an architecture that was
+built and removed — belongs in the design doc. Both get written down; only the address differs.
+
 ---
 
 ## The step outline

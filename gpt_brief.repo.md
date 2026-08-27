@@ -14,7 +14,12 @@ It sits between a Feature Brief and the source code itself:
 - far denser than prose documentation
 - grounded in implementation, not just intent
 
-It lives in the feature's source folder in the repo, named `<feature>.gpt.md` — the AI-facing implementation map, sibling to `<feature>.git.md`, the human/wiki-facing Feature Brief (`gpt_brief.feature.md`). `.gpt.md` maps *how it is built*; `.git.md` says what it *is and does*.
+It lives in the feature's source folder in the repo. **The extension depends on what the language already gives you**, and the two layouts are not interchangeable:
+
+- **Two files** — `<feature>.gpt.md` is the AI-facing implementation map, sibling to `<feature>.git.md`, the human/wiki-facing Feature Brief (`gpt_brief.feature.md`). `.gpt.md` maps *how it is built*; `.git.md` says what it *is and does*. Use this where the language offers no first-class place for per-file rationale.
+- **One file** — `<feature>.git.md` is the In-Repo Doc and takes every live-system definition, while the language's own file headers carry the per-file rationale and the Feature Brief lives with the project's standing design rather than in the source folder. **Rust is the worked case:** `//!` module headers are already the AI-facing per-file map, rustdoc renders and link-checks them, and a `.gpt.md` beside them would be a third unverified copy. See `gpt_style.rust.md`.
+
+Whichever layout applies, the rule is the same: **exactly one artifact describes the live system.** Two documents on one subject drift, then disagree, and a reader has no way to tell which is current.
 It is consumed by Code as cheap standing context, by QA as the implementation-shape reference, and by humans browsing the folder.
 
 Target compression is **80–90% pseudocode, 10–20% prose** — compact enough to be cheap AI context and fast human orientation, not a substitute for reading the code but a reliable map of it.
@@ -167,7 +172,7 @@ Use `// #region` comment markers to show file-level region grouping without brea
 
 In-Repo Docs are produced in **planning chat** using `gpt_task.plan.md` or during a **QA pass** after a feature reaches a stable shape.
 
-**Filename convention:** `<feature>.gpt.md`, placed in the feature's source folder.
+**Filename convention:** `<feature>.gpt.md` — or `<feature>.git.md` under the one-file layout above — placed in the feature's source folder.
 Use the feature name, not the class name — `compostpile.gpt.md`, not `BECompostpile.gpt.md`.
 If a subsystem warrants its own doc, use `<feature>.<subsystem>.gpt.md`.
 
