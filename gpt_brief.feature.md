@@ -43,7 +43,15 @@ Use the smallest scope that is honest. Do not scope to Domain when the work is r
 
 **Scope:** Domain | Feature | Subsystem
 **Domain:** <domain, e.g. wildfarm or oddform>
-**Status:** Draft | Active | Stable | Superseded
+**Status:** Design `Proposed|Draft|Confirmed|Superseded` - Build `Unbuilt|Partial|Built|Retired` - Validation `Untested|Tested|Benchmarked|Gate pending|n/a`
+**Status detail:** <which slice shipped, which gate is pending, which open question is owed>
+
+---
+
+**On the status line.** Three axes, because one field cannot answer three questions without drifting
+— see `gpt_env.agent_workflow.md`. The trap it prevents is a `Confirmed` design being read as
+working software. Never infer one axis from another, and be strict with Validation: `Gate pending`
+names a real gate that has not been run.
 
 ---
 

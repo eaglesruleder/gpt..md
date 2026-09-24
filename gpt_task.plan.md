@@ -271,6 +271,16 @@ Deliver:
 - key design risks or contradictions
 - alternative framing where it materially improves the plan
 - a recommended minimal first implementation or next research step
+- **for an assessment or verdict: the premise it rests on**, stated explicitly
+
+**State what would reopen a verdict.** An assessment that concludes "reject" or "do not adopt" is
+almost always rejecting against a constraint — a technology that was not viable, a boundary that
+could not be crossed, a cost nobody could pay. Write that constraint down beside the verdict. When
+it later changes, the assessment then reopens honestly instead of being carried forward as a settled
+fact whose reason nobody remembers, or discarded wholesale when only its premise expired.
+
+The failure this prevents is quiet and expensive: a good verdict outliving the condition that made
+it correct.
 
 Standard:
 - preserve the user's actual goal
@@ -403,6 +413,21 @@ Example pattern:
 - phase 3: expansion or systemic integration
 
 Do not over-scope version 1 unless the user explicitly wants the full system designed at once.
+
+**Where a delivery window is fixed, say plainly that features need not be completed.** A prototype
+or a milestone under a deadline is allowed to **stub, shortcut, and interface-ready** for the system
+behind it, and stating that as a licence changes how every task under it gets scoped:
+
+| Do | Don't |
+|---|---|
+| build the seam the real system will plug into | build the real system |
+| hardcode one case and name the axis it generalises on | generalise before there are two cases |
+| ship a stub that is *honest about being one* | ship a stub that looks finished |
+| take the substrate, content and geometry that already exist | overhaul substrate to make a feature "proper" |
+| leave a comment naming what the full version needs | leave a silent shortcut for someone to trip over |
+
+Without that licence stated, a plan's placeholder list reads as a risk register — every item a
+subsystem. With it, most items are a few days of honest stub, and the plan becomes scopeable.
 
 ### 8. Keep programmer handoff explicit
 A programmer-ready doc should not force the engineer to reconstruct the feature from scattered notes.
