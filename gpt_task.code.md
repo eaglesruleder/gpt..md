@@ -23,6 +23,32 @@ This file executes a `gpt_brief.code.md` (the per-session Code Brief handoff) an
 
 Standard: narrowest viable change; no speculative architecture; no placeholder pseudocode unless requested; do not invent APIs that do not fit the visible codebase; do not split files just to satisfy style when the RAD phase benefits from keeping logic together.
 
+### B. Review
+Findings in priority order, each concrete and separately labelled — **bug / risk / readability / optional**:
+1. **Breaking** — compile, incorrect API use, wrong-context execution, state corruption, duplicated/skipped processing, invalid state/collection/domain assumptions, bad null handling
+2. **Behavioural risk** — tuning/output/acceptance drift, model↔state desync, order-of-operations, edge cases now behaving differently
+3. **Readability / navigation** — weak or missing `#region`s in large files, mixed concerns, duplicated decision logic, obscuring names, over-broad helpers, hidden coupling
+4. **Optional polish** — only after the above
+
+Call out accidental extra changes explicitly. File size alone is not a negative.
+
+### C. Refactor
+- the refactor itself, proof external behaviour is preserved, and any invariant it relies on
+
+Standard: stay within approved scope; do not hide logic behind an abstraction that is harder to follow; do not split related feature code before navigation or maintenance is actually a problem.
+
+### D. Design / plan
+- proposed flow, key methods/responsibilities, data ownership, risks/tradeoffs, recommended minimal implementation path
+
+Standard: concrete structure over abstract principle; bias toward something implementable next, not a grand architecture; temporary concentration of related logic in one file is fine when it aids iteration.
+
+### E. Debug
+- most likely failure points ranked, why each fits the symptom, the smallest confirming check, patched code where possible
+
+Standard: rank, do not shotgun; connect the symptom to real control flow or state mutation.
+
+---
+
 ## Basic Verification & Test Handoff
 
 **Coding's responsibility is to establish reasonable confidence that the change is ready for a live user check, not to run a full QA campaign. Choose the cheapest meaningful evidence for the actual change.**
@@ -50,27 +76,3 @@ Once the implementation and proportional checks are done, report:
 An agent may perform a short live smoke test; the user can then provide the interactive judgement. **Ready for user test** is distinct from **QA/acceptance passed**.
 
 ---
-
-### B. Review
-Findings in priority order, each concrete and separately labelled — **bug / risk / readability / optional**:
-1. **Breaking** — compile, incorrect API use, wrong-context execution, state corruption, duplicated/skipped processing, invalid state/collection/domain assumptions, bad null handling
-2. **Behavioural risk** — tuning/output/acceptance drift, model↔state desync, order-of-operations, edge cases now behaving differently
-3. **Readability / navigation** — weak or missing `#region`s in large files, mixed concerns, duplicated decision logic, obscuring names, over-broad helpers, hidden coupling
-4. **Optional polish** — only after the above
-
-Call out accidental extra changes explicitly. File size alone is not a negative.
-
-### C. Refactor
-- the refactor itself, proof external behaviour is preserved, and any invariant it relies on
-
-Standard: stay within approved scope; do not hide logic behind an abstraction that is harder to follow; do not split related feature code before navigation or maintenance is actually a problem.
-
-### D. Design / plan
-- proposed flow, key methods/responsibilities, data ownership, risks/tradeoffs, recommended minimal implementation path
-
-Standard: concrete structure over abstract principle; bias toward something implementable next, not a grand architecture; temporary concentration of related logic in one file is fine when it aids iteration.
-
-### E. Debug
-- most likely failure points ranked, why each fits the symptom, the smallest confirming check, patched code where possible
-
-Standard: rank, do not shotgun; connect the symptom to real control flow or state mutation.
