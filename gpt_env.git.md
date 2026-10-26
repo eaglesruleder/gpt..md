@@ -60,18 +60,30 @@ Diagnostic controls remain useful: camera placement, logging, deterministic scen
 
 ---
 
-## 4. Integration Validation
+## 4. Validation Budget & Live Handoff
 
-Before claiming that a branch is complete:
+**Default: implementation agents perform fast, targeted checks, then hand the ordinary runtime to the user for interactive testing. Do not consume a long coding session running an unsolicited test gauntlet.**
+
+- Verify the changed area with the smallest useful compile/check, focused unit test, static check, or deterministic proof. Prefer a relevant target over workspace-wide testing; do not run every possible command because it appears in a task brief.
+- Do not independently launch broad regression suites, lengthy visual routes, repeated capture loops, stress/soak runs, benchmark matrices, or performance gauntlets as a routine completion step.
+- If a check is unexpectedly slow, repetitive, environment-dependent, or needs manual visual judgement, report that limitation and hand off instead of spending substantial time iterating on test machinery.
+- Once the implementation and quick checks are ready, **tell the user it is ready to test**. Include the branch/commit, the ordinary launch command, a short scenario to exercise, expected result, and any unverified edge. The user owns the live interactive acceptance run unless they request agent-driven execution.
+- Do not replace the user's acceptance with screenshots or synthetic tests. Do not report an unrun live scenario as passing.
+
+**Long-form validation is intentional.** Run performance measurements, extended regression/visual gauntlets, hardware-specific captures, or benchmark sweeps only when explicitly requested, as an agreed acceptance gate, or during a dedicated QA pass. Distinguish implementing a test from running an expensive test campaign.
+
+This budget is not permission to omit cheap correctness checks or conceal failures: a failed focused check is a defect to resolve or report. If extensive automated testing is required for a specific high-risk change, flag the need rather than silently spending a long session on it.
+
+### Integration checks
 
 1. Confirm the intended branch, main base, dependencies, and scope of the diff.
-2. Check for accidentally duplicated pipelines, unneeded activation flags, dormant new code, and legacy fallbacks.
-3. Run relevant automated checks, then run the ordinary application entry point. For visual or interactive work, inspect the live path in representative conditions; synthetic or software-only proofs must not be represented as real-hardware visual acceptance.
-4. Validate integration seams between related changes. Two independently green branches are not proof of a working merged product.
-5. Integrate validated work into main through the agreed repository workflow and verify the combined result.
+2. Check for duplicated pipelines, unneeded activation flags, dormant new code, and legacy fallbacks.
+3. Run the relevant **bounded** checks and prepare the default-path launch for the user's live test. If the user or QA has already supplied a result, reconcile it with the implementation; otherwise record live validation as pending.
+4. Check the integration seams affected by the change. Two independently green branches are not proof of a working merged product.
+5. Integrate accepted work into main through the agreed repository workflow. Verify what can be checked cheaply after integration; reserve long-form acceptance for the user or QA.
 6. Retire approved temporary experiments and comparison paths when their purpose ends.
 
-Report these states distinctly: **implemented**, **live on the working branch**, **validated on the default path**, and **integrated into main**. One state does not imply the next.
+Report these states distinctly: **implemented**, **ready for user test**, **user/QA validated on the default path**, and **integrated into main**. One state does not imply the next.
 
 ---
 
@@ -83,7 +95,8 @@ Report these states distinctly: **implemented**, **live on the working branch**,
 | Related features grow overlapping branches for weeks | Converge through one lineage or validated slices into main |
 | Full/Far or high/low paths duplicate the same algorithm | Use one shared operation with explicit differences as inputs |
 | New code only runs with an enable-new argument | Make the new path the branch default unless gating was expressly approved |
-| Tests pass but ordinary launches still exercise legacy code | Validate the actual default launch and integration seams |
+| Tests pass but ordinary launches still exercise legacy code | Have the user test the default launch and its integration seams |
+| Coding agent spends 30 minutes on an unrequested test gauntlet | Run focused checks, then hand off live validation; reserve long runs for explicit requests or QA |
 | The previous renderer survives indefinitely after cutover | Remove temporary alternatives and their routing glue |
 | Several branches work alone but fail when combined | Integrate early and validate the combined result |
 
