@@ -60,33 +60,34 @@ Diagnostic controls remain useful: camera placement, logging, deterministic scen
 
 ---
 
-## 4. Validation Budget & Live Handoff
+## 4. Proportional Verification & Test Handoff
 
-**Default: implementation agents perform fast, targeted checks, then hand the ordinary runtime to the user for interactive testing. Do not consume a long coding session running an unsolicited test gauntlet.**
+**Default: prove the change is plausibly working with the cheapest useful checks, then stop. The test seam is between a quick smoke/vibe check and a systematic QA campaign—not between the agent and the running application.**
 
-- Verify the changed area with the smallest useful compile/check, focused unit test, static check, or deterministic proof. Prefer a relevant target over workspace-wide testing; do not run every possible command because it appears in a task brief.
-- Do not independently launch broad regression suites, lengthy visual routes, repeated capture loops, stress/soak runs, benchmark matrices, or performance gauntlets as a routine completion step.
-- If a check is unexpectedly slow, repetitive, environment-dependent, or needs manual visual judgement, report that limitation and hand off instead of spending substantial time iterating on test machinery.
-- Once the implementation and quick checks are ready, **tell the user it is ready to test**. Include the branch/commit, the ordinary launch command, a short scenario to exercise, expected result, and any unverified edge. The user owns the live interactive acceptance run unless they request agent-driven execution.
-- Do not replace the user's acceptance with screenshots or synthetic tests. Do not report an unrun live scenario as passing.
+**Basic verification:**
+- Inspect the diff for unintended edits, dormant code, and hidden activation flags. Run fast formatting/syntax and affected-target compilation checks where practical.
+- Run focused, inexpensive tests for changed logic when they meaningfully catch mistakes. Do not automatically broaden into the full workspace or every related test.
+- For visual/interactive changes, it is fine—and often preferable—to **launch the application normally, look at the result, rotate/move/interact briefly, and check that the intended behaviour looks plausible**. A single quick manual smoke check may answer more than elaborate capture machinery.
+- Fix obvious failures exposed by these checks, then rerun the smallest relevant confirmation. Be explicit about what was checked and what was not.
 
-**Long-form validation is intentional.** Run performance measurements, extended regression/visual gauntlets, hardware-specific captures, or benchmark sweeps only when explicitly requested, as an agreed acceptance gate, or during a dedicated QA pass. Distinguish implementing a test from running an expensive test campaign.
+**Not basic by default:** orchestrating before/after screenshots, pixel-diff analysis, multiple camera-angle matrices, automated visual evidence pipelines, secondary comparison baselines, benchmark sweeps, soak/stress tests, or broad regression gauntlets. Do not spend a long implementation session constructing proof infrastructure when an ordinary live look would establish enough confidence to hand off.
 
-This budget is not permission to omit cheap correctness checks or conceal failures: a failed focused check is a defect to resolve or report. If extensive automated testing is required for a specific high-risk change, flag the need rather than silently spending a long session on it.
+**Escalation:** Run systematic comparisons or expensive validation only when explicitly requested, required by an agreed acceptance gate, or during dedicated QA/performance work. If a smoke check exposes a defect that needs deeper investigation, explain the finding and proposed scope before escalating; do not silently turn a small implementation task into a test campaign.
+
+**Handoff:** When bounded checks and any practical quick smoke test are done, tell the user the branch/commit, ordinary launch command, what was actually checked, the expected behaviour, and remaining uncertainties. Invite the user's interactive judgement where needed. The agent may perform a brief live check; it should not substitute that for formal acceptance or claim exhaustive visual correctness.
 
 ### Integration checks
 
-1. Confirm the intended branch, main base, dependencies, and scope of the diff.
-2. Check for duplicated pipelines, unneeded activation flags, dormant new code, and legacy fallbacks.
-3. Run the relevant **bounded** checks and prepare the default-path launch for the user's live test. If the user or QA has already supplied a result, reconcile it with the implementation; otherwise record live validation as pending.
-4. Check the integration seams affected by the change. Two independently green branches are not proof of a working merged product.
-5. Integrate accepted work into main through the agreed repository workflow. Verify what can be checked cheaply after integration; reserve long-form acceptance for the user or QA.
-6. Retire approved temporary experiments and comparison paths when their purpose ends.
+1. Confirm branch/base/dependencies and scope of the diff.
+2. Check for duplicated implementations, feature-activation gates, and obsolete fallbacks.
+3. Run cheap, relevant checks and optionally a brief default-path live smoke test. Do not invent an exhaustive test matrix.
+4. Check changed integration seams to the extent inexpensive and practical; report any unverified seams.
+5. Integrate accepted work into main through the agreed workflow. Recheck basic build/runtime behaviour where practical, leaving deliberate gauntlets to their own task or QA.
+6. Remove temporary comparator paths after their agreed purpose ends.
 
-Report these states distinctly: **implemented**, **ready for user test**, **user/QA validated on the default path**, and **integrated into main**. One state does not imply the next.
+Report separately: **implemented**, **basic verification passed**, **ready for user review**, **QA/acceptance validated**, and **integrated into main**. Do not infer a later state from an earlier one.
 
 ---
-
 ## Recognisable Failure Patterns
 
 | Failure | Correction |
@@ -95,8 +96,8 @@ Report these states distinctly: **implemented**, **ready for user test**, **user
 | Related features grow overlapping branches for weeks | Converge through one lineage or validated slices into main |
 | Full/Far or high/low paths duplicate the same algorithm | Use one shared operation with explicit differences as inputs |
 | New code only runs with an enable-new argument | Make the new path the branch default unless gating was expressly approved |
-| Tests pass but ordinary launches still exercise legacy code | Have the user test the default launch and its integration seams |
-| Coding agent spends 30 minutes on an unrequested test gauntlet | Run focused checks, then hand off live validation; reserve long runs for explicit requests or QA |
+| Tests pass but ordinary launches still exercise legacy code | Smoke-test the default launch; check the actual new path is reached |
+| Agent spends 30 minutes comparing captures that a quick rotation could assess | Prefer a brief live vibe check; reserve capture matrices and comparisons for requested QA |
 | The previous renderer survives indefinitely after cutover | Remove temporary alternatives and their routing glue |
 | Several branches work alone but fail when combined | Integrate early and validate the combined result |
 
