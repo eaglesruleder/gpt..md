@@ -60,34 +60,17 @@ Diagnostic controls remain useful: camera placement, logging, deterministic scen
 
 ---
 
-## 4. Proportional Verification & Test Handoff
+## 4. Finish and Integrate the Change
 
-**Default: prove the change is plausibly working with the cheapest useful checks, then stop. The test seam is between a quick smoke/vibe check and a systematic QA campaign—not between the agent and the running application.**
+- Inspect the branch's ancestry and diff against main before integrating; keep unrelated or superseded work out of the result.
+- Reconcile any overlapping changes into one live implementation, removing obsolete routing and activation flags.
+- Bring accepted work back into main through the agreed workflow. A committed branch is not the same as an integrated result; report the actual state.
+- After integration, check that the combined code still reaches the intended default path and report unresolved integration conflicts or dependencies.
 
-**Basic verification:**
-- Inspect the diff for unintended edits, dormant code, and hidden activation flags. Run fast formatting/syntax and affected-target compilation checks where practical.
-- Run focused, inexpensive tests for changed logic when they meaningfully catch mistakes. Do not automatically broaden into the full workspace or every related test.
-- For visual/interactive changes, it is fine—and often preferable—to **launch the application normally, look at the result, rotate/move/interact briefly, and check that the intended behaviour looks plausible**. A single quick manual smoke check may answer more than elaborate capture machinery.
-- Fix obvious failures exposed by these checks, then rerun the smallest relevant confirmation. Be explicit about what was checked and what was not.
-
-**Not basic by default:** orchestrating before/after screenshots, pixel-diff analysis, multiple camera-angle matrices, automated visual evidence pipelines, secondary comparison baselines, benchmark sweeps, soak/stress tests, or broad regression gauntlets. Do not spend a long implementation session constructing proof infrastructure when an ordinary live look would establish enough confidence to hand off.
-
-**Escalation:** Run systematic comparisons or expensive validation only when explicitly requested, required by an agreed acceptance gate, or during dedicated QA/performance work. If a smoke check exposes a defect that needs deeper investigation, explain the finding and proposed scope before escalating; do not silently turn a small implementation task into a test campaign.
-
-**Handoff:** When bounded checks and any practical quick smoke test are done, tell the user the branch/commit, ordinary launch command, what was actually checked, the expected behaviour, and remaining uncertainties. Invite the user's interactive judgement where needed. The agent may perform a brief live check; it should not substitute that for formal acceptance or claim exhaustive visual correctness.
-
-### Integration checks
-
-1. Confirm branch/base/dependencies and scope of the diff.
-2. Check for duplicated implementations, feature-activation gates, and obsolete fallbacks.
-3. Run cheap, relevant checks and optionally a brief default-path live smoke test. Do not invent an exhaustive test matrix.
-4. Check changed integration seams to the extent inexpensive and practical; report any unverified seams.
-5. Integrate accepted work into main through the agreed workflow. Recheck basic build/runtime behaviour where practical, leaving deliberate gauntlets to their own task or QA.
-6. Remove temporary comparator paths after their agreed purpose ends.
-
-Report separately: **implemented**, **basic verification passed**, **ready for user review**, **QA/acceptance validated**, and **integrated into main**. Do not infer a later state from an earlier one.
+The scope and cost of implementation-time tests, short interactive smoke checks, and handoff to the user belong to `gpt_task.code.md`; systematic acceptance and performance gauntlets belong to explicit QA work.
 
 ---
+
 ## Recognisable Failure Patterns
 
 | Failure | Correction |
@@ -96,13 +79,11 @@ Report separately: **implemented**, **basic verification passed**, **ready for u
 | Related features grow overlapping branches for weeks | Converge through one lineage or validated slices into main |
 | Full/Far or high/low paths duplicate the same algorithm | Use one shared operation with explicit differences as inputs |
 | New code only runs with an enable-new argument | Make the new path the branch default unless gating was expressly approved |
-| Tests pass but ordinary launches still exercise legacy code | Smoke-test the default launch; check the actual new path is reached |
-| Agent spends 30 minutes comparing captures that a quick rotation could assess | Prefer a brief live vibe check; reserve capture matrices and comparisons for requested QA |
 | The previous renderer survives indefinitely after cutover | Remove temporary alternatives and their routing glue |
 | Several branches work alone but fail when combined | Integrate early and validate the combined result |
 
 ## Scope Boundary
 
-This file does not prescribe commit-message wording, branch-name spelling, task-document structure, source-code style, or domain-specific architecture. Those belong to existing task, workflow, and style references.
+This file does not prescribe commit-message wording, branch-name spelling, task-document structure, source-code style, test depth, or domain-specific architecture. Coding verification and test handoff belong to `gpt_task.code.md`; dedicated review depth belongs to the QA task.
 
 The governing principle is **one integrated codebase, one live default behaviour, and branches that converge instead of multiplying**.
