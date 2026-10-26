@@ -23,6 +23,34 @@ This file executes a `gpt_brief.code.md` (the per-session Code Brief handoff) an
 
 Standard: narrowest viable change; no speculative architecture; no placeholder pseudocode unless requested; do not invent APIs that do not fit the visible codebase; do not split files just to satisfy style when the RAD phase benefits from keeping logic together.
 
+## Basic Verification & Test Handoff
+
+**Coding's responsibility is to establish reasonable confidence that the change is ready for a live user check, not to run a full QA campaign. Choose the cheapest meaningful evidence for the actual change.**
+
+### Basic checks
+- Inspect the diff for accidental edits and verify the intended implementation is connected to the normal execution path.
+- Run fast formatting/syntax checks, an affected-target compile/check, and directly relevant focused tests where useful. Do not broaden to the full workspace or every related test without a reason.
+- For interactive or visual changes, a brief ordinary application launch is welcome: look at the result, rotate/move/interact, and check that it plausibly works. A quick **vibe check** can provide more useful confidence than building a comparison harness.
+- If a focused check or quick smoke test exposes an obvious defect, fix it and rerun the smallest confirming check. Never claim an unrun or failed check passed.
+- Keep verification proportional to risk and execution cost. If a check becomes unexpectedly slow or requires a special environment, report that limitation rather than spending the implementation session on secondary testing.
+
+### Deliberate escalation
+- Before/after screenshot sets, pixel diffs, many-camera/many-config matrices, comprehensive regression suites, extended visual capture, benchmarks, soak tests, and performance/stress gauntlets are **not routine Coding deliverables**.
+- Run them when explicitly requested, required by an already agreed acceptance gate, or within a dedicated QA/performance task.
+- If a quick check uncovers a problem that genuinely needs deep diagnosis, explain the evidence and proposed extra scope before turning a short implementation into a testing campaign.
+- Do not create elaborate automated proof infrastructure simply to replace a fast human-visible check.
+
+### Ready-for-test handoff
+Once the implementation and proportional checks are done, report:
+- the changed branch/commit and what was implemented
+- checks actually run and their results; mark skipped or incomplete checks accurately
+- the ordinary launch command and the shortest useful interaction to try
+- the expected result, remaining uncertainty, and anything reserved for the user's acceptance or QA
+
+An agent may perform a short live smoke test; the user can then provide the interactive judgement. **Ready for user test** is distinct from **QA/acceptance passed**.
+
+---
+
 ### B. Review
 Findings in priority order, each concrete and separately labelled — **bug / risk / readability / optional**:
 1. **Breaking** — compile, incorrect API use, wrong-context execution, state corruption, duplicated/skipped processing, invalid state/collection/domain assumptions, bad null handling
